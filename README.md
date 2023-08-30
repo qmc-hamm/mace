@@ -149,6 +149,18 @@ pip install ./mace[wandb]
 
 And specify the necessary keyword arguments (`--wandb`, `--wandb_project`, `--wandb_entity`, `--wandb_name`, `--wandb_log_hypers`)
 
+## MLFlow for experiment tracking
+
+If you would like to use MACE with MLFLow to log your experiments install with 
+
+```sh
+pip install ./mace[mlflow]
+```
+
+and specify the necessary keyword arguments (`--mlflow`,`--mlflow-tracking-url`,`--mlflow-experiment-id`)
+or add the necessary environment variables (`MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT_NAME`)
+
+
 ## Development
 
 We use `black`, `isort`, `pylint`, and `mypy`.

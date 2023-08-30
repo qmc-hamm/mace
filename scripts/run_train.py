@@ -46,6 +46,8 @@ def main() -> None:
         )
         config_type_weights = {"Default": 1.0}
 
+
+    
     # Data preparation
     collections, atomic_energies_dict = get_dataset_from_xyz(
         train_path=args.train_file,
@@ -482,75 +484,78 @@ def main() -> None:
         )
         wandb.run.summary["params"] = args_dict_json
 
-    tools.train(
-        model=model,
-        loss_fn=loss_fn,
-        train_loader=train_loader,
-        valid_loader=valid_loader,
-        optimizer=optimizer,
-        lr_scheduler=lr_scheduler,
-        checkpoint_handler=checkpoint_handler,
-        eval_interval=args.eval_interval,
-        start_epoch=start_epoch,
-        max_num_epochs=args.max_num_epochs,
-        logger=logger,
-        patience=args.patience,
-        output_args=output_args,
-        device=device,
-        swa=swa,
-        ema=ema,
-        max_grad_norm=args.clip_grad,
-        log_errors=args.error_table,
-        log_wandb=args.wandb,
-    )
-
-    # Evaluation on test datasets
-    logging.info("Computing metrics for training, validation, and test sets")
-
-    all_collections = [
-        ("train", collections.train),
-        ("valid", collections.valid),
-    ] + collections.tests
-
-    for swa_eval in swas:
-        epoch = checkpoint_handler.load_latest(
-            state=tools.CheckpointState(model, optimizer, lr_scheduler),
-            swa=swa_eval,
-            device=device,
-        )
-        model.to(device)
-        logging.info(f"Loaded model from epoch {epoch}")
-
-        table = create_error_table(
-            table_type=args.error_table,
-            all_collections=all_collections,
-            z_table=z_table,
-            r_max=args.r_max,
-            valid_batch_size=args.valid_batch_size,
+    #Setup If condition for context provider
+    import mlflow
+    with mlflow.start_run():
+        tools.train(
             model=model,
             loss_fn=loss_fn,
+            train_loader=train_loader,
+            valid_loader=valid_loader,
+            optimizer=optimizer,
+            lr_scheduler=lr_scheduler,
+            checkpoint_handler=checkpoint_handler,
+            eval_interval=args.eval_interval,
+            start_epoch=start_epoch,
+            max_num_epochs=args.max_num_epochs,
+            logger=logger,
+            patience=args.patience,
             output_args=output_args,
-            log_wandb=args.wandb,
             device=device,
+            swa=swa,
+            ema=ema,
+            max_grad_norm=args.clip_grad,
+            log_errors=args.error_table,
+            log_wandb=args.wandb,
         )
-        logging.info("\n" + str(table))
 
-        # Save entire model
-        if swa_eval:
-            model_path = Path(args.checkpoints_dir) / (tag + "_swa.model")
-        else:
-            model_path = Path(args.checkpoints_dir) / (tag + ".model")
-        logging.info(f"Saving model to {model_path}")
-        if args.save_cpu:
-            model = model.to("cpu")
-        torch.save(model, model_path)
+        # Evaluation on test datasets
+        logging.info("Computing metrics for training, validation, and test sets")
 
-        if swa_eval:
-            torch.save(model, Path(args.model_dir) / (args.name + "_swa.model"))
-        else:
-            torch.save(model, Path(args.model_dir) / (args.name + ".model"))
+        all_collections = [
+            ("train", collections.train),
+            ("valid", collections.valid),
+        ] + collections.tests
 
-    logging.info("Done")
+        for swa_eval in swas:
+            epoch = checkpoint_handler.load_latest(
+                state=tools.CheckpointState(model, optimizer, lr_scheduler),
+                swa=swa_eval,
+                device=device,
+            )
+            model.to(device)
+            logging.info(f"Loaded model from epoch {epoch}")
+
+            table = create_error_table(
+                table_type=args.error_table,
+                all_collections=all_collections,
+                z_table=z_table,
+                r_max=args.r_max,
+                valid_batch_size=args.valid_batch_size,
+                model=model,
+                loss_fn=loss_fn,
+                output_args=output_args,
+                log_wandb=args.wandb,
+                device=device,
+            )
+            logging.info("\n" + str(table))
+
+            # Save entire model
+            if swa_eval:
+                model_path = Path(args.checkpoints_dir) / (tag + "_swa.model")
+            else:
+                model_path = Path(args.checkpoints_dir) / (tag + ".model")
+            logging.info(f"Saving model to {model_path}")
+            if args.save_cpu:
+                model = model.to("cpu")
+            torch.save(model, model_path)
+
+            if swa_eval:
+                torch.save(model, Path(args.model_dir) / (args.name + "_swa.model"))
+            else:
+                torch.save(model, Path(args.model_dir) / (args.name + ".model"))
+
+        logging.info("Done")
 
 
 if __name__ == "__main__":
