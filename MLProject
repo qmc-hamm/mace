@@ -1,0 +1,31 @@
+name: MACE
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      batch_size: {type: int, default: 4}
+      max_num_epochs: {type: int, default: 500}
+      device: {type: str, default: cuda}
+      train_file: {type: path, default: qmc/training.xyz}
+      valid_file: {type: path, default: qmc/testing.xyz}
+      r_max: {type: float, default: 3.0}
+    command: "python scripts/run_train.py \
+      --name='hydrogen' \
+      --train_file='{valid_file}' \
+      --E0s='average' \
+      --model='MACE' \
+      --hidden_irreps='64x0e + 64x1o' \
+      --r_max={r_max} \
+      --default_dtype='float32' \
+      --batch_size={batch_size} \
+      --valid_batch_size=4 \
+      --max_num_epochs={max_num_epochs} \
+      --energy_weight=1.0 \
+      --forces_weight=20.0 \
+      --ema \
+      --ema_decay=0.99 \
+      --amsgrad \
+      --restart_latest \
+      --device={device} "
+
