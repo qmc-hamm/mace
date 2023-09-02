@@ -526,6 +526,9 @@ def main() -> None:
             model.to(device)
             logging.info(f"Loaded model from epoch {epoch}")
 
+            if mlflow:
+                mlflow.pytorch.log_model(model, "model")
+
             table = create_error_table(
                 table_type=args.error_table,
                 all_collections=all_collections,
@@ -537,6 +540,7 @@ def main() -> None:
                 output_args=output_args,
                 log_wandb=args.wandb,
                 device=device,
+                log_mlflow=mlflow
             )
             logging.info("\n" + str(table))
 

@@ -98,18 +98,10 @@ def get_dataset_from_xyz(
     )
 
 
-def create_error_table(
-    table_type: str,
-    all_collections: list,
-    z_table: AtomicNumberTable,
-    r_max: float,
-    valid_batch_size: int,
-    model: torch.nn.Module,
-    loss_fn: torch.nn.Module,
-    output_args: Dict[str, bool],
-    log_wandb: bool,
-    device: str,
-) -> PrettyTable:
+def create_error_table(table_type: str, all_collections: list, z_table: AtomicNumberTable,
+                       r_max: float, valid_batch_size: int, model: torch.nn.Module,
+                       loss_fn: torch.nn.Module, output_args: Dict[str, bool],
+                       log_wandb: bool, device: str, log_mlflow=mlflow) -> PrettyTable:
     if log_wandb:
         import wandb
     table = PrettyTable()
@@ -189,15 +181,20 @@ def create_error_table(
             output_args=output_args,
             device=device,
         )
+        wandb_log_dict = {
+            name
+            + "_final_rmse_e_per_atom": metrics["rmse_e_per_atom"]
+                                        * 1e3,  # meV / atom
+            name + "_final_rmse_f": metrics["rmse_f"] * 1e3,  # meV / A
+            name + "_final_rel_rmse_f": metrics["rel_rmse_f"],
+        }
+
         if log_wandb:
-            wandb_log_dict = {
-                name
-                + "_final_rmse_e_per_atom": metrics["rmse_e_per_atom"]
-                * 1e3,  # meV / atom
-                name + "_final_rmse_f": metrics["rmse_f"] * 1e3,  # meV / A
-                name + "_final_rel_rmse_f": metrics["rel_rmse_f"],
-            }
             wandb.log(wandb_log_dict)
+
+        if log_mlflow:
+            log_mlflow.log_metrics(wandb_log_dict)
+
         if table_type == "TotalRMSE":
             table.add_row(
                 [
