@@ -149,8 +149,27 @@ pip install ./mace[wandb]
 
 And specify the necessary keyword arguments (`--wandb`, `--wandb_project`, `--wandb_entity`, `--wandb_name`, `--wandb_log_hypers`)
 
-## MLFlow for experiment tracking
+## MLFlow for experiment tracking on HAL
 
+Set the following environment variables:
+  * MLFLOW_TRACKING_URI
+
+Run this on an interactive GPU node:
+```shell
+git clone https://github.com/qmc-hamm/mace.git
+cd mace
+git checkout mlflow
+module load opence/1.7.2
+conda env create -f mlflow_env.yaml
+conda activate mlflow
+
+mlflow run -P device=cuda -P max_num_epochs=5 \ 
+           -P r_max=2 .
+``` 
+
+This will build a conda environment based on the file `conda.env` and run your
+training code with the specified parameters. The results will be logged to the
+MLFlow server at the URL specified in MLFLOW_TRACKING_URI.
 If you would like to use MACE with MLFLow to log your experiments install with 
 
 ```sh
