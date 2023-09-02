@@ -101,7 +101,7 @@ def get_dataset_from_xyz(
 def create_error_table(table_type: str, all_collections: list, z_table: AtomicNumberTable,
                        r_max: float, valid_batch_size: int, model: torch.nn.Module,
                        loss_fn: torch.nn.Module, output_args: Dict[str, bool],
-                       log_wandb: bool, device: str, log_mlflow=mlflow) -> PrettyTable:
+                       log_wandb: bool, device: str, log_mlflow=None) -> PrettyTable:
     if log_wandb:
         import wandb
     table = PrettyTable()
