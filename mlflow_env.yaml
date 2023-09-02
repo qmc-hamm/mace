@@ -1,4 +1,4 @@
-name: mlflowyaml
+name: mlflow
 channels:
   - defaults
 dependencies:
