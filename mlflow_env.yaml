@@ -8,4 +8,5 @@ dependencies:
   - pip
   - pip:
     - mlflow
+    - mlflow-slurm>=1.0.1
 
