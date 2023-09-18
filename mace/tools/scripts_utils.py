@@ -190,9 +190,11 @@ def create_error_table(table_type: str, all_collections: list, z_table: AtomicNu
         }
 
         if log_wandb:
+            import wandb
             wandb.log(wandb_log_dict)
 
         if log_mlflow:
+            import mlflow
             log_mlflow.log_metrics(wandb_log_dict)
 
         if table_type == "TotalRMSE":

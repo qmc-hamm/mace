@@ -482,6 +482,7 @@ def train(args):
         wandb.run.summary["params"] = args_dict_json
 
     if args.mlflow:
+        import mlflow
         mlflow.log_params(args_dict_json)
 
     tools.train(

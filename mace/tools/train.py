@@ -189,9 +189,11 @@ def train(
             }
 
             if log_wandb:
+                import wandb
                 wandb.log(wandb_log_dict)
             
             if log_mlflow:
+                import mlflow
                 mlflow.log_metrics(wandb_log_dict)
 
             if valid_loss >= lowest_loss:

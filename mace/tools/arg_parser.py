@@ -474,7 +474,7 @@ def build_default_arg_parser() -> argparse.ArgumentParser:
         "--mlflow",
         help="Activate MLFlow Tracking",
         type=str,
-        default="",
+        default=False,
     )
     parser.add_argument(
         "--mlflow-tracking-url",
@@ -486,7 +486,7 @@ def build_default_arg_parser() -> argparse.ArgumentParser:
         "--mlflow-experiment-name",
         help="MLFlow Experiment Name",
         type=str,
-        default="",
+        default="Default",
     )
 
     return parser
