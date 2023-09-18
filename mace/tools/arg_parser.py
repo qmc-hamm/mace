@@ -469,6 +469,26 @@ def build_default_arg_parser() -> argparse.ArgumentParser:
             "forces_weight",
         ],
     )
+    #options to use MLFlow
+    parser.add_argument(
+        "--mlflow",
+        help="Activate MLFlow Tracking",
+        type=str,
+        default="",
+    )
+    parser.add_argument(
+        "--mlflow-tracking-url",
+        help="MLFlow Tracking Url",
+        type=str,
+        default="",
+    )
+    parser.add_argument(
+        "--mlflow-experiment-name",
+        help="MLFlow Experiment Name",
+        type=str,
+        default="",
+    )
+
     return parser
 
 

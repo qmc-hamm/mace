@@ -4,6 +4,7 @@
 # This program is distributed under the MIT License (see MIT.md)
 ###########################################################################################
 
+import os
 import ast
 import logging
 from pathlib import Path
@@ -21,9 +22,7 @@ from mace import data, modules, tools
 from mace.tools import torch_geometric
 from mace.tools.scripts_utils import create_error_table, get_dataset_from_xyz
 
-
-def main() -> None:
-    args = tools.build_default_arg_parser().parse_args()
+def train(args):
     tag = tools.get_tag(name=args.name, seed=args.seed)
 
     # Setup
@@ -46,8 +45,6 @@ def main() -> None:
         )
         config_type_weights = {"Default": 1.0}
 
-
-    
     # Data preparation
     collections, atomic_energies_dict = get_dataset_from_xyz(
         train_path=args.train_file,
@@ -468,12 +465,12 @@ def main() -> None:
     logging.info(f"Number of parameters: {tools.count_parameters(model)}")
     logging.info(f"Optimizer: {optimizer}")
 
+    wandb_config = {}
+    args_dict = vars(args)
+    args_dict_json = json.dumps(args_dict)
+
     if args.wandb:
         logging.info("Using Weights and Biases for logging")
-        import wandb
-        wandb_config = {}
-        args_dict = vars(args)
-        args_dict_json = json.dumps(args_dict)
         for key in args.wandb_log_hypers:
             wandb_config[key] = args_dict[key]
         tools.init_wandb(
@@ -484,82 +481,109 @@ def main() -> None:
         )
         wandb.run.summary["params"] = args_dict_json
 
-    #Setup If condition for context provider
-    import mlflow
-    with mlflow.start_run():
-        tools.train(
+    if args.mlflow:
+        mlflow.log_params(args_dict_json)
+
+    tools.train(
+        model=model,
+        loss_fn=loss_fn,
+        train_loader=train_loader,
+        valid_loader=valid_loader,
+        optimizer=optimizer,
+        lr_scheduler=lr_scheduler,
+        checkpoint_handler=checkpoint_handler,
+        eval_interval=args.eval_interval,
+        start_epoch=start_epoch,
+        max_num_epochs=args.max_num_epochs,
+        logger=logger,
+        patience=args.patience,
+        output_args=output_args,
+        device=device,
+        swa=swa,
+        ema=ema,
+        max_grad_norm=args.clip_grad,
+        log_errors=args.error_table,
+        log_wandb=args.wandb,
+        log_mlflow=args.mlflow
+    )
+
+    # Evaluation on test datasets
+    logging.info("Computing metrics for training, validation, and test sets")
+
+    all_collections = [
+        ("train", collections.train),
+        ("valid", collections.valid),
+    ] + collections.tests
+
+    for swa_eval in swas:
+        epoch = checkpoint_handler.load_latest(
+            state=tools.CheckpointState(model, optimizer, lr_scheduler),
+            swa=swa_eval,
+            device=device,
+        )
+        model.to(device)
+        logging.info(f"Loaded model from epoch {epoch}")
+
+        if mlflow:
+            mlflow.pytorch.log_model(model, "model")
+
+        table = create_error_table(
+            table_type=args.error_table,
+            all_collections=all_collections,
+            z_table=z_table,
+            r_max=args.r_max,
+            valid_batch_size=args.valid_batch_size,
             model=model,
             loss_fn=loss_fn,
-            train_loader=train_loader,
-            valid_loader=valid_loader,
-            optimizer=optimizer,
-            lr_scheduler=lr_scheduler,
-            checkpoint_handler=checkpoint_handler,
-            eval_interval=args.eval_interval,
-            start_epoch=start_epoch,
-            max_num_epochs=args.max_num_epochs,
-            logger=logger,
-            patience=args.patience,
             output_args=output_args,
-            device=device,
-            swa=swa,
-            ema=ema,
-            max_grad_norm=args.clip_grad,
-            log_errors=args.error_table,
             log_wandb=args.wandb,
+            device=device,
+            log_mlflow=mlflow
         )
+        logging.info("\n" + str(table))
 
-        # Evaluation on test datasets
-        logging.info("Computing metrics for training, validation, and test sets")
+        # Save entire model
+        if swa_eval:
+            model_path = Path(args.checkpoints_dir) / (tag + "_swa.model")
+        else:
+            model_path = Path(args.checkpoints_dir) / (tag + ".model")
+        logging.info(f"Saving model to {model_path}")
+        if args.save_cpu:
+            model = model.to("cpu")
+        torch.save(model, model_path)
 
-        all_collections = [
-            ("train", collections.train),
-            ("valid", collections.valid),
-        ] + collections.tests
+        if swa_eval:
+            torch.save(model, Path(args.model_dir) / (args.name + "_swa.model"))
+        else:
+            torch.save(model, Path(args.model_dir) / (args.name + ".model"))
 
-        for swa_eval in swas:
-            epoch = checkpoint_handler.load_latest(
-                state=tools.CheckpointState(model, optimizer, lr_scheduler),
-                swa=swa_eval,
-                device=device,
-            )
-            model.to(device)
-            logging.info(f"Loaded model from epoch {epoch}")
+    logging.info("Done")
 
-            if mlflow:
-                mlflow.pytorch.log_model(model, "model")
+def main() -> None:
+    args = tools.build_default_arg_parser().parse_args()
 
-            table = create_error_table(
-                table_type=args.error_table,
-                all_collections=all_collections,
-                z_table=z_table,
-                r_max=args.r_max,
-                valid_batch_size=args.valid_batch_size,
-                model=model,
-                loss_fn=loss_fn,
-                output_args=output_args,
-                log_wandb=args.wandb,
-                device=device,
-                log_mlflow=mlflow
-            )
-            logging.info("\n" + str(table))
+    if args.mlflow:
+        logging.info("Started Logging with MLFlow!")
+        import mlflow
 
-            # Save entire model
-            if swa_eval:
-                model_path = Path(args.checkpoints_dir) / (tag + "_swa.model")
-            else:
-                model_path = Path(args.checkpoints_dir) / (tag + ".model")
-            logging.info(f"Saving model to {model_path}")
-            if args.save_cpu:
-                model = model.to("cpu")
-            torch.save(model, model_path)
+        if not os.environ.get("MLFLOW_TRACKING_URI"):
+            if args.mlflow_tracking_url:
+                mlflow.set_tracking_uri(args.mlflow_tracking_url)
+            
+        if not os.environ.get("MLFLOW_EXPERIMENT_NAME"):
+            mlflow.set_experiment(args.mlflow_experiment_name)
+        
+        experiment = mlflow.get_experiment_by_name(args.mlflow_experiment_name)
+        with mlflow.start_run(experiment_id=experiment.experiment_id):
+            train(args)
+        
+    elif args.wandb:
+        logging.info("Started Logging with WandB!")
+        import wandb
+        train(args)
+    else:
+        train(args)
 
-            if swa_eval:
-                torch.save(model, Path(args.model_dir) / (args.name + "_swa.model"))
-            else:
-                torch.save(model, Path(args.model_dir) / (args.name + ".model"))
-
-        logging.info("Done")
 
 
 if __name__ == "__main__":
