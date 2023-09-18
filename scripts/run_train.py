@@ -467,9 +467,9 @@ def train(args):
 
     wandb_config = {}
     args_dict = vars(args)
-    args_dict_json = json.dumps(args_dict)
 
     if args.wandb:
+        args_dict_json = json.dumps(args_dict)
         logging.info("Using Weights and Biases for logging")
         for key in args.wandb_log_hypers:
             wandb_config[key] = args_dict[key]
@@ -483,7 +483,7 @@ def train(args):
 
     if args.mlflow:
         import mlflow
-        mlflow.log_params(args_dict_json)
+        mlflow.log_params(args_dict)
 
     tools.train(
         model=model,

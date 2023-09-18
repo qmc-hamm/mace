@@ -11,7 +11,7 @@ entry_points:
       valid_file: {type: path, default: qmc/testing.xyz}
       r_max: {type: float, default: 3.0}
       mlflow: {type: str, default: true}
-      mlflow_tracking_url: { type: str }
+      mlflow_tracking_url: { type: str, default: "" }
       mlflow_experiment_name: { type: str, default: "Default" }
     command: "python scripts/run_train.py \
       --name='hydrogen' \
