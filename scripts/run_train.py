@@ -568,6 +568,7 @@ def main() -> None:
         logging.info("Started Logging with MLFlow!")
         import mlflow
         with mlflow.start_run():
+            mlflow.pytorch.autolog()
             train(args)
         
     elif args.wandb:
