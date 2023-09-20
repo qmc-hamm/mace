@@ -481,9 +481,9 @@ def train(args):
         )
         wandb.run.summary["params"] = args_dict_json
 
-    if args.mlflow:
-        import mlflow
-        mlflow.log_params(args_dict)
+    # if args.mlflow:
+    #     import mlflow
+    #     mlflow.log_params(args_dict)
 
     tools.train(
         model=model,
@@ -525,7 +525,8 @@ def train(args):
         model.to(device)
         logging.info(f"Loaded model from epoch {epoch}")
 
-        if mlflow:
+        if args.mlflow:
+            import mlflow
             mlflow.pytorch.log_model(model, "model")
 
         table = create_error_table(
@@ -566,16 +567,7 @@ def main() -> None:
     if args.mlflow:
         logging.info("Started Logging with MLFlow!")
         import mlflow
-
-        if not os.environ.get("MLFLOW_TRACKING_URI"):
-            if args.mlflow_tracking_url:
-                mlflow.set_tracking_uri(args.mlflow_tracking_url)
-            
-        if not os.environ.get("MLFLOW_EXPERIMENT_NAME"):
-            mlflow.set_experiment(args.mlflow_experiment_name)
-        
-        experiment = mlflow.get_experiment_by_name(args.mlflow_experiment_name)
-        with mlflow.start_run(experiment_id=experiment.experiment_id):
+        with mlflow.start_run():
             train(args)
         
     elif args.wandb:

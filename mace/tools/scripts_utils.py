@@ -104,6 +104,8 @@ def create_error_table(table_type: str, all_collections: list, z_table: AtomicNu
                        log_wandb: bool, device: str, log_mlflow=None) -> PrettyTable:
     if log_wandb:
         import wandb
+    if log_mlflow:
+        import mlflow
     table = PrettyTable()
     if table_type == "TotalRMSE":
         table.field_names = [

@@ -10,9 +10,6 @@ entry_points:
       train_file: {type: path, default: qmc/training.xyz}
       valid_file: {type: path, default: qmc/testing.xyz}
       r_max: {type: float, default: 3.0}
-      mlflow: {type: str, default: true}
-      mlflow_tracking_url: { type: str, default: "" }
-      mlflow_experiment_name: { type: str, default: "Default" }
     command: "python scripts/run_train.py \
       --name='hydrogen' \
       --train_file='{valid_file}' \
@@ -31,8 +28,6 @@ entry_points:
       --amsgrad \
       --restart_latest \
       --device={device} \
-      --mlflow={mlflow} \
-      --mlflow-tracking-url={mlflow_tracking_url} \
-      --mlflow-experiment-name={mlflow_experiment_name}
+      --mlflow=true \
       "
 

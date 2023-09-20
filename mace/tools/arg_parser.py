@@ -476,22 +476,9 @@ def build_default_arg_parser() -> argparse.ArgumentParser:
         type=str,
         default=False,
     )
-    parser.add_argument(
-        "--mlflow-tracking-url",
-        help="MLFlow Tracking Url",
-        type=str,
-        default="",
-    )
-    parser.add_argument(
-        "--mlflow-experiment-name",
-        help="MLFlow Experiment Name",
-        type=str,
-        default="Default",
-    )
 
     return parser
-
-
+    
 def check_float_or_none(value: str) -> Optional[float]:
     try:
         return float(value)
