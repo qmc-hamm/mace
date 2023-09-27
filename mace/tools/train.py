@@ -56,14 +56,13 @@ def train(
     ema: Optional[ExponentialMovingAverage] = None,
     max_grad_norm: Optional[float] = 10.0,
     log_wandb: bool = False,
+    log_mlflow: bool = False
 ):
     lowest_loss = np.inf
     valid_loss = np.inf
     patience_counter = 0
     swa_start = True
     keep_last = False
-    if log_wandb:
-        import wandb
 
     if max_grad_norm is not None:
         logging.info(f"Using gradient clipping with tolerance={max_grad_norm:.3f}")
@@ -181,14 +180,22 @@ def train(
                 logging.info(
                     f"Epoch {epoch}: loss={valid_loss:.4f}, RMSE_E_per_atom={error_e:.1f} meV, RMSE_F={error_f:.1f} meV / A, RMSE_Mu_per_atom={error_mu:.2f} mDebye"
                 )
+
+            wandb_log_dict = {
+                "epoch": epoch,
+                "valid_loss": valid_loss,
+                "valid_rmse_e_per_atom": eval_metrics["rmse_e_per_atom"],
+                "valid_rmse_f": eval_metrics["rmse_f"],
+            }
+
             if log_wandb:
-                wandb_log_dict = {
-                    "epoch": epoch,
-                    "valid_loss": valid_loss,
-                    "valid_rmse_e_per_atom": eval_metrics["rmse_e_per_atom"],
-                    "valid_rmse_f": eval_metrics["rmse_f"],
-                }
+                import wandb
                 wandb.log(wandb_log_dict)
+            
+            if log_mlflow:
+                import mlflow
+                mlflow.log_metrics(wandb_log_dict)
+
             if valid_loss >= lowest_loss:
                 patience_counter += 1
                 if patience_counter >= patience and epoch < swa.start:

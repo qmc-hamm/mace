@@ -469,9 +469,16 @@ def build_default_arg_parser() -> argparse.ArgumentParser:
             "forces_weight",
         ],
     )
+    #options to use MLFlow
+    parser.add_argument(
+        "--mlflow",
+        help="Activate MLFlow Tracking",
+        type=str,
+        default=False,
+    )
+
     return parser
-
-
+    
 def check_float_or_none(value: str) -> Optional[float]:
     try:
         return float(value)

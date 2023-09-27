@@ -27,5 +27,7 @@ entry_points:
       --ema_decay=0.99 \
       --amsgrad \
       --restart_latest \
-      --device={device} "
+      --device={device} \
+      --mlflow=true \
+      "
 

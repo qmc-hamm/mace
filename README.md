@@ -176,7 +176,7 @@ If you would like to use MACE with MLFLow to log your experiments install with
 pip install ./mace[mlflow]
 ```
 
-and specify the necessary keyword arguments (`--mlflow`,`--mlflow-tracking-url`,`--mlflow-experiment-id`)
+and specify the necessary keyword arguments `--mlflow-tracking-url`,`--mlflow-experiment-id`)
 or add the necessary environment variables (`MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT_NAME`)
 
 
