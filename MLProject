@@ -10,6 +10,7 @@ entry_points:
       train_file: {type: path, default: qmc/training.xyz}
       valid_file: {type: path, default: qmc/testing.xyz}
       r_max: {type: float, default: 3.0}
+      save_cpu: {type: str, default: "--save_cpu"}
     command: "python scripts/run_train.py \
       --name='hydrogen' \
       --train_file='{valid_file}' \
@@ -29,5 +30,6 @@ entry_points:
       --restart_latest \
       --device={device} \
       --mlflow=true \
+      {save_cpu}
       "
 
