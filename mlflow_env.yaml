@@ -5,8 +5,9 @@ dependencies:
   - python=3.9
   - pyarrow
   - pillow
+  - openblas
   - pip
   - pip:
     - mlflow
-    - mlflow-slurm>=1.0.1
+    - mlflow-slurm>=1.0.2
 
