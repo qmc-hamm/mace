@@ -527,7 +527,17 @@ def train(args):
 
         if args.mlflow:
             import mlflow
-            mlflow.pytorch.log_model(model, "model")
+            if torch.cuda.is_available():
+                model.to(torch.device('cuda'))
+                mlflow.pytorch.log_model(model, "model_cuda")
+
+            elif torch.backends.mps.is_available():
+                model.to(torch.device('mps'))
+                mlflow.pytorch.log_model(model, "model_mps")
+            
+            else:
+                model.to(torch.device("cpu"))
+                mlflow.pytorch.log_model(model, "model_cpu")
 
         table = create_error_table(
             table_type=args.error_table,
