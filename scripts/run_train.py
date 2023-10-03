@@ -536,7 +536,7 @@ def train(args):
             output_args=output_args,
             log_wandb=args.wandb,
             device=device,
-            log_mlflow=mlflow
+            log_mlflow=args.mlflow
         )
         logging.info("\n" + str(table))
 
