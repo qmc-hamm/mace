@@ -535,9 +535,8 @@ def train(args):
                 model.to(torch.device('mps'))
                 mlflow.pytorch.log_model(model, "model_mps")
             
-            else:
-                model.to(torch.device("cpu"))
-                mlflow.pytorch.log_model(model, "model_cpu")
+            model.to(torch.device("cpu"))
+            mlflow.pytorch.log_model(model, "model_cpu")
 
         table = create_error_table(
             table_type=args.error_table,
