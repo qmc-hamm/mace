@@ -525,19 +525,6 @@ def train(args):
         model.to(device)
         logging.info(f"Loaded model from epoch {epoch}")
 
-        if args.mlflow:
-            import mlflow
-            if torch.cuda.is_available():
-                model.to(torch.device('cuda'))
-                mlflow.pytorch.log_model(model, "model_cuda")
-
-            elif torch.backends.mps.is_available():
-                model.to(torch.device('mps'))
-                mlflow.pytorch.log_model(model, "model_mps")
-            
-            model.to("cpu")
-            mlflow.pytorch.log_model(model, "model_cpu")
-
         table = create_error_table(
             table_type=args.error_table,
             all_collections=all_collections,
@@ -567,6 +554,19 @@ def train(args):
             torch.save(model, Path(args.model_dir) / (args.name + "_swa.model"))
         else:
             torch.save(model, Path(args.model_dir) / (args.name + ".model"))
+
+        if args.mlflow:
+            import mlflow
+            if torch.cuda.is_available():
+                model.to(torch.device('cuda'))
+                mlflow.pytorch.log_model(model, "model_cuda")
+
+            elif torch.backends.mps.is_available():
+                model.to(torch.device('mps'))
+                mlflow.pytorch.log_model(model, "model_mps")
+            
+            model.to("cpu")
+            mlflow.pytorch.log_model(model, "model_cpu")
 
     logging.info("Done")
 
