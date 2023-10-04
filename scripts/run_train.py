@@ -559,14 +559,14 @@ def train(args):
             import mlflow
             if torch.cuda.is_available():
                 model.to(torch.device('cuda'))
-                mlflow.pytorch.log_model(model, "model_cuda")
+                mlflow.pytorch.log_model(model, "model/cuda")
 
             elif torch.backends.mps.is_available():
                 model.to(torch.device('mps'))
-                mlflow.pytorch.log_model(model, "model_mps")
+                mlflow.pytorch.log_model(model, "model/mps")
             
             model.to("cpu")
-            mlflow.pytorch.log_model(model, "model_cpu")
+            mlflow.pytorch.log_model(model, "model/cpu")
 
     logging.info("Done")
 
