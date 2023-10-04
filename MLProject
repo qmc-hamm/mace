@@ -7,10 +7,8 @@ entry_points:
       batch_size: { type: int, default: 4 }
       max_num_epochs: { type: int, default: 500 }
       device: { type: str, default: cuda }
-      train_file:
-        { type: path, default: BOTNet-datasets/dataset_3BPA/train_300K.xyz }
-      valid_file:
-        { type: path, default: BOTNet-datasets/dataset_3BPA/test_300K.xyz }
+      train_file: { type: path, default: qmc/train_300K.xyz }
+      valid_file: { type: path, default: qmc/test_300K.xyz }
       r_max: { type: float, default: 3.0 }
       save_cpu: { type: str, default: "--save_cpu" }
     command: "python scripts/run_train.py \
