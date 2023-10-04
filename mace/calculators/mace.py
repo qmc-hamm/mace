@@ -5,12 +5,12 @@
 ###########################################################################################
 
 
-import torch
 from ase.calculators.calculator import Calculator, all_changes
 from ase.stress import full_3x3_to_voigt_6_stress
 
 from mace import data
 from mace.tools import torch_geometric, torch_tools, utils
+import mlflow.pytorch
 
 
 class MACECalculator(Calculator):
@@ -30,7 +30,7 @@ class MACECalculator(Calculator):
         Calculator.__init__(self, **kwargs)
         self.results = {}
 
-        self.model = torch.load(f=model_path, map_location=device)
+        self.model = mlflow.pytorch.load_model(model_uri=model_path, map_location=device)
         self.r_max = float(self.model.r_max)
         self.device = torch_tools.init_device(device)
         self.energy_units_to_eV = energy_units_to_eV
@@ -114,7 +114,7 @@ class DipoleMACECalculator(Calculator):
         Calculator.__init__(self, **kwargs)
         self.results = {}
 
-        self.model = torch.load(f=model_path, map_location=device)
+        self.model = mlflow.pytorch.load_model(model_uri=model_path, map_location=device)
         self.r_max = self.model.r_max
         self.device = torch_tools.init_device(device)
         self.length_units_to_A = length_units_to_A
@@ -188,7 +188,7 @@ class EnergyDipoleMACECalculator(Calculator):
         Calculator.__init__(self, **kwargs)
         self.results = {}
 
-        self.model = torch.load(f=model_path, map_location=device)
+        self.model = mlflow.pytorch.load_model(model_uri=model_path, map_location=device)
         self.r_max = self.model.r_max
         self.device = torch_tools.init_device(device)
         self.energy_units_to_eV = energy_units_to_eV
