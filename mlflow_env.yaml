@@ -7,8 +7,8 @@ dependencies:
   - pillow
   - openblas
   - pip
-  - ase
-  - numpy
   - pip:
       - mlflow
+      - ase
+      - numpy
       - mlflow-slurm>=1.0.2
