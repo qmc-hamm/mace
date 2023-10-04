@@ -32,3 +32,5 @@ entry_points:
       --mlflow=true \
       {save_cpu}
       "
+  calculator:
+    command: python calc_test.py
