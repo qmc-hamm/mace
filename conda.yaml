@@ -10,7 +10,8 @@ dependencies:
   - pillow
   - pyarrow
   - pip
+  - ase
+  - numpy
   - pip:
-    - mlflow
-    - --editable .
-
+      - mlflow
+      - --editable .
