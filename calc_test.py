@@ -5,18 +5,25 @@ import numpy as np
 import time
 
 from mace.calculators import MACECalculator
+import argparse
 
-run_id = "d17b475d94ce4279ba2ef6f6e494f3ef"
-model_uri = f"runs:/{run_id}/model/"
-device = "cpu"
+parser = argparse.ArgumentParser()
+parser.add_argument("--run_id", help="MLFlow Run ID", required=True)
+parser.add_argument("--device", help="Device the user wants to run", required=True)
+parser.add_argument("--test_file", help="Test file", required=True)
+parser.add_argument("--output_file", help="Output File", required=True)
+args = parser.parse_args()
 
-calculator = MACECalculator(model_path=model_uri + device, device=device, default_dtype="float32")
-init_conf = read('qmc/testing.xyz', '0')
+model_uri = f"runs:/{args.run_id}/model/"
+
+
+calculator = MACECalculator(model_path=model_uri + args.device, device=args.device, default_dtype="float32")
+init_conf = read(args.test_file, '0')
 init_conf.set_calculator(calculator)
 
 dyn = Langevin(init_conf, 0.5*units.fs, temperature_K=310, friction=5e-3)
 def write_frame():
-        dyn.atoms.write('md_3bpa.xyz', append=True)
+        dyn.atoms.write(args.output_file, append=True)
 dyn.attach(write_frame, interval=50)
 dyn.run(100)
 print("MD finished!")
