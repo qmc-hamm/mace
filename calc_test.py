@@ -9,7 +9,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--run_id", help="MLFlow Run ID", required=True)
-parser.add_argument("--device", help="Device the user wants to run", required=True)
+parser.add_argument("--device", help="Device the user wants to run", choices=["cpu", "cuda", "mps"] ,required=True)
 parser.add_argument("--test_file", help="Test file", required=True)
 parser.add_argument("--output_file", help="Output File", required=True)
 args = parser.parse_args()
