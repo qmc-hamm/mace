@@ -11,6 +11,5 @@ dependencies:
   - pyarrow
   - pip
   - pip:
-    - mlflow
-    - --editable .
-
+      - mlflow
+      - --editable .

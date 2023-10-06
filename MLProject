@@ -4,13 +4,13 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      batch_size: {type: int, default: 4}
-      max_num_epochs: {type: int, default: 500}
-      device: {type: str, default: cuda}
-      train_file: {type: path, default: qmc/training.xyz}
-      valid_file: {type: path, default: qmc/testing.xyz}
-      r_max: {type: float, default: 3.0}
-      save_cpu: {type: str, default: "--save_cpu"}
+      batch_size: { type: int, default: 4 }
+      max_num_epochs: { type: int, default: 500 }
+      device: { type: str, default: cuda }
+      train_file: { type: path, default: qmc/training.xyz }
+      valid_file: { type: path, default: qmc/testing.xyz }
+      r_max: { type: float, default: 3.0 }
+      save_cpu: { type: str, default: "--save_cpu" }
     command: "python scripts/run_train.py \
       --name='hydrogen' \
       --train_file='{valid_file}' \
@@ -32,4 +32,10 @@ entry_points:
       --mlflow=true \
       {save_cpu}
       "
-
+  calculator:
+    parameters:
+      run_id: { type: str, default: d17b475d94ce4279ba2ef6f6e494f3ef }
+      device: { type: str, default: cuda }
+      test_file: { type: str, default: qmc/testing.xyz }
+      output_file: { type: str, default: output.xyz }
+    command: "python calc_test.py --run_id={run_id} --device={device} --test_file={test_file} --output_file={output_file}"

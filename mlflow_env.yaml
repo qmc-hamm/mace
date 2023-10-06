@@ -8,6 +8,7 @@ dependencies:
   - openblas
   - pip
   - pip:
-    - mlflow
-    - mlflow-slurm>=1.0.2
-
+      - mlflow
+      - ase
+      - numpy
+      - mlflow-slurm>=1.0.2
