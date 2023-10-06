@@ -10,8 +10,8 @@ run_id = "d17b475d94ce4279ba2ef6f6e494f3ef"
 model_uri = f"runs:/{run_id}/model/"
 device = "cpu"
 
-calculator = MACECalculator(model_path=model_uri + device, device=device)
-init_conf = read('BOTNet-datasets/dataset_3BPA/test_300K.xyz', '0')
+calculator = MACECalculator(model_path=model_uri + device, device=device, default_dtype="float32")
+init_conf = read('qmc/testing.xyz', '0')
 init_conf.set_calculator(calculator)
 
 dyn = Langevin(init_conf, 0.5*units.fs, temperature_K=310, friction=5e-3)
