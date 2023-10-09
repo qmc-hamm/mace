@@ -27,7 +27,7 @@ def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, va
     )
     tracking_client.log_batch(run_id=p.run_id, metrics=[],
                              params=[Param("r_max", str(r_max)), Param("forces_weight", str(forces_weight)), Param("energy_weight", str(energy_weight))],
-                             tags=[RunTag(mlflow.utils.mlflow_tags.MLFLOW_PARENT_RUN_ID, parent_run_id)])
+                             tags=[RunTag(mlflow.utils.mlflow_tags.MLFLOW_PARENT_RUN_ID, str(parent_run_id))])
 
     return p
 
@@ -38,7 +38,7 @@ def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, va
 @click.option("--train_file", type=click.STRING, default="qmc/training.xyz", help="Training File Path")
 @click.option("--valid_file", type=click.STRING, default="qmc/testing.xyz", help="Testing File Path")
 def run(num_runs, train_backend_config, train_file, valid_file):
-    provided_run_id = os.environ.get("MLFLOW_RUN_ID", "Default")
+    provided_run_id = os.environ.get("MLFLOW_RUN_ID", None)
     with mlflow.start_run(run_id=provided_run_id) as run:
         print("Search is run_id ", run.info.run_id)
         experiment_id = run.info.experiment_id
