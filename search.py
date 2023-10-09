@@ -44,7 +44,7 @@ def run(num_runs, train_backend_config, train_file, valid_file):
         experiment_id = run.info.experiment_id
         runs = [(np.random.uniform(2.5, 3.0), np.random.uniform(10, 100)) for _ in range(num_runs)]
         jobs = []
-        for r_max, forces_weight, energy_weight in runs:
+        for r_max, forces_weight in runs:
             jobs.append(run_train(
                 experiment_id,
                 r_max=r_max, forces_weight=forces_weight, energy_weight=1.0 ,train_file=train_file,
