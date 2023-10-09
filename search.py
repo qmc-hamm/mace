@@ -26,7 +26,7 @@ def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, va
         backend_config=backend_config
     )
     tracking_client.log_batch(run_id=p.run_id, metrics=[],
-                             params=[Param("r_max", float(r_max)), Param("forces_weight", float(forces_weight)), Param("energy_weight", float(energy_weight))],
+                             params=[Param("r_max", str(r_max)), Param("forces_weight", str(forces_weight)), Param("energy_weight", str(energy_weight))],
                              tags=[RunTag(mlflow.utils.mlflow_tags.MLFLOW_PARENT_RUN_ID, parent_run_id)])
 
     return p
