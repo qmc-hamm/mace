@@ -9,7 +9,7 @@ from mlflow.tracking import MlflowClient
 tracking_client = mlflow.tracking.MlflowClient()
 
 
-def run_train(experiment_id, r_max, forces_weight, energy_weight=1.0, train_file, valid_file, backend_config="slurm_config.json", parent_run_id=None):
+def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, valid_file, backend_config="slurm_config.json", parent_run_id=None):
     p = mlflow.projects.run(
         uri=os.path.dirname(os.path.realpath(__file__)),
         entry_point="scripts/run_train",
