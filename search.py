@@ -9,7 +9,7 @@ from mlflow.tracking import MlflowClient
 tracking_client = mlflow.tracking.MlflowClient()
 
 
-def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, valid_file, backend_config="slurm_config.json", parent_run_id=None):
+def run_train(experiment_id, r_max, forces_weight, energy_weight=1.0, train_file, valid_file, backend_config="slurm_config.json", parent_run_id=None):
     p = mlflow.projects.run(
         uri=os.path.dirname(os.path.realpath(__file__)),
         entry_point="scripts/run_train",
@@ -42,13 +42,12 @@ def run(num_runs, train_backend_config, train_file, valid_file):
     with mlflow.start_run(run_id=provided_run_id) as run:
         print("Search is run_id ", run.info.run_id)
         experiment_id = run.info.experiment_id
-        energy_weight = 1.0
-        runs = [(np.random.uniform(2.5, 3.0), np.random.uniform(10, 100)), energy_weight for _ in range(num_runs)]
+        runs = [(np.random.uniform(2.5, 3.0), np.random.uniform(10, 100)) for _ in range(num_runs)]
         jobs = []
         for r_max, forces_weight, energy_weight in runs:
             jobs.append(run_train(
                 experiment_id,
-                r_max=r_max, forces_weight=forces_weight, train_file=train_file,
+                r_max=r_max, forces_weight=forces_weight, energy_weight=1.0 ,train_file=train_file,
                 valid_file=valid_file, backend_config=train_backend_config,
                 parent_run_id=provided_run_id)
             )
