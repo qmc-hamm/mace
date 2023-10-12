@@ -1,5 +1,5 @@
 {
-  "partition": "debug",
+  "partition": "gpu",
   "account": "uiuc",
   "gres": "gpu:v100:1",
   "modules": ["opence/1.7.2"]
