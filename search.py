@@ -17,8 +17,8 @@ def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, va
             "r_max": float(r_max),
             "forces_weight": float(forces_weight),
             "energy_weight": float(energy_weight),
-            "train_file": train_file,
-            "valid_file": valid_file
+            "train_file": str(train_file),
+            "valid_file": str(valid_file)
         },
         experiment_id=experiment_id,
         synchronous=False,
@@ -42,7 +42,7 @@ def run(num_runs, train_backend_config, train_file, valid_file):
     with mlflow.start_run(run_id=provided_run_id) as run:
         print("Search is run_id ", run.info.run_id)
         experiment_id = run.info.experiment_id
-        runs = [(np.random.uniform(2.5, 3.0), np.random.uniform(10, 100)) for _ in range(num_runs)]
+        runs = [(round(np.random.uniform(2.5, 3.0),2), round(np.random.uniform(10, 100),2)) for _ in range(num_runs)]
         jobs = []
         for r_max, forces_weight in runs:
             jobs.append(run_train(
