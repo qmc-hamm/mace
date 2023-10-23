@@ -38,7 +38,7 @@ def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, va
 @click.option("--train_file", type=click.STRING, default="qmc/training.xyz", help="Training File Path")
 @click.option("--valid_file", type=click.STRING, default="qmc/testing.xyz", help="Testing File Path")
 def run(num_runs, train_backend_config, train_file, valid_file):
-    provided_run_id = os.environ.get("MLFLOW_RUN_ID", None)
+    provided_run_id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(32))
     with mlflow.start_run(run_id=provided_run_id) as run:
         print("Search is run_id ", run.info.run_id)
         experiment_id = run.info.experiment_id
