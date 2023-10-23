@@ -33,8 +33,8 @@ def run_train(experiment_id, r_max, forces_weight, energy_weight, train_file, va
 
 
 @click.command(help="Perform grid search over train (main entry point).")
-@click.option("--num-runs", type=click.INT, default=2, help="Maximum number of runs to evaluate.")
-@click.option("--train-backend-config", type=click.STRING, default="slurm_config.json", help="Json file for training jobs")
+@click.option("--num_runs", type=click.INT, default=2, help="Maximum number of runs to evaluate.")
+@click.option("--train_backend_config", type=click.STRING, default="slurm_config.json", help="Json file for training jobs")
 @click.option("--train_file", type=click.STRING, default="qmc/training.xyz", help="Training File Path")
 @click.option("--valid_file", type=click.STRING, default="qmc/testing.xyz", help="Testing File Path")
 def run(num_runs, train_backend_config, train_file, valid_file):

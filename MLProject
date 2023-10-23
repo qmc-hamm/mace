@@ -32,12 +32,3 @@ entry_points:
       --device={device} \
       --mlflow=true
       "
-  calculator:
-    parameters:
-      run_id: { type: str, default: d17b475d94ce4279ba2ef6f6e494f3ef }
-      name: { type: str, default: "mace" }
-      version: { type int, default: 1 }
-      device: { type: str, default: cuda }
-      test_file: { type: str, default: qmc/testing.xyz }
-      output_file: { type: str, default: output.xyz }
-    command: "python calc_test.py --run_id={run_id} --name={name} --version={version} --device={device} --test_file={test_file} --output_file={output_file}"
