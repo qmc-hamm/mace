@@ -53,8 +53,10 @@ def run(num_runs, train_backend_config, train_file, valid_file):
                 valid_file=valid_file, backend_config=train_backend_config,
                 parent_run_id=provided_run_id)
             )
-        results = map(lambda job: job.wait(), jobs)
-        print(list(results))
+        
+        print("Launched Jobs: ", jobs)
+        print("Started %d slurm jobs" % len(jobs))
+        exit() 
 
 
 if __name__ == "__main__":
