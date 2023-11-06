@@ -56,7 +56,6 @@ def run(num_runs, train_backend_config, train_file, valid_file):
         
         print("Launched Jobs: ", jobs)
         print("Started %d slurm jobs" % len(jobs))
-        exit() 
 
 
 if __name__ == "__main__":
